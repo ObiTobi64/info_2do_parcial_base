@@ -37,7 +37,8 @@ var final_touch = Vector2.ZERO
 var is_controlling = false
 
 # scoring variables and signals
-
+var score = 0
+signal score_updated(new_score)
 
 # counter variables and signals
 
@@ -162,6 +163,7 @@ func _process(delta):
 		touch_input()
 
 func find_matches():
+	var match_count = 0
 	for i in width:
 		for j in height:
 			if all_pieces[i][j] != null:
@@ -180,6 +182,7 @@ func find_matches():
 					all_pieces[i][j].dim()
 					all_pieces[i + 1][j].matched = true
 					all_pieces[i + 1][j].dim()
+					match_count += 1
 				# detect vertical matches
 				if (
 					j > 0 and j < height -1 
@@ -194,6 +197,11 @@ func find_matches():
 					all_pieces[i][j].dim()
 					all_pieces[i][j + 1].matched = true
 					all_pieces[i][j + 1].dim()
+					match_count += 1
+					
+	if match_count > 0:
+		score += match_count * 10
+		emit_signal("score_updated", score)
 					
 	get_parent().get_node("destroy_timer").start()
 	
@@ -274,4 +282,4 @@ func _on_refill_timer_timeout():
 	
 func game_over():
 	state = WAIT
-	print("game over")
+	print("game over")
